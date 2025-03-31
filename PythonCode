@@ -1,0 +1,47 @@
+def costs_march_30():
+    # Costs as of March 30th, 2025. Link: 
+    print("Costs for March 30:\n\n\n 380 x 2 nights: $760.00\n\n Cleaning fee: $175.00\n\n Airbnb service fee: $132.00\n\n Taxes: $108.69\n\n Total: $1,175.69\n\n\n 380 x 3 nights: $1,140.00\n\n Cleaning fee: $200.00\n\n Airbnb service fee: $189.18\n\n Taxes: $155.78\n\n Total: $1,684.96\n\n\n")
+    print(" ---------------------------------")
+def calculate_vacation_cost():
+  # Gets the cost for each additional night
+  night_cost = int(input("\n\n\nEnter the general cost for each additional night: "))
+  # Gets the number of people staying for 2 nights and 3 nights
+  num_2_nights = int(input("\n\nEnter the number of people staying for 2 nights: "))
+  num_3_nights = int(input("\nEnter the number of people staying for 3 nights: "))
+  # Gets the expenses for 2-night stayers
+  cleaning_fee_2_nights = float(input("\n\n\nEnter the cleaning fee for a 2 night stay: "))
+  service_fee_2_nights = float(input("\nEnter the service fee for a 2 night stay: "))
+  tax_2_nights = float(input("\nEnter the tax for a 2 night stay: "))
+  # Gets the expenses for 3-night stayers
+  cleaning_fee_3_nights = float(input("\n\nEnter the cleaning for a 3 night stay: "))
+  service_fee_3_nights = float(input("\nEnter the service fee for 3 a night stay: "))
+  tax_3_nights = float(input("\nEnter the tax for a 3 night stay: "))
+  # Calculates total costs for people staying 2 nights
+  total_nightly_cost_2_nights = tax_2_nights + service_fee_2_nights + cleaning_fee_2_nights + (night_cost * 2)
+  # Calculates total costs for people staying 3 nights
+  total_nightly_cost_3_nights = tax_3_nights + service_fee_3_nights + cleaning_fee_3_nights + (night_cost * 3)
+  # Calculates additional costs for 3 day stayers
+  additional_cost_3_nights = (total_nightly_cost_3_nights - total_nightly_cost_2_nights)
+  # Alternative calculation to test total costs for people staying 3 nights
+  total_nightly_cost_3_nights = tax_2_nights + service_fee_2_nights + cleaning_fee_2_nights + additional_cost_3_nights
+  # Calculates the total number of people
+  total_people = num_2_nights + num_3_nights
+  # Calculates the total cost for each person
+  total_cost = total_nightly_cost_2_nights + additional_cost_3_nights
+  # Distributes the costs
+  cost_per_2_night_person = (total_nightly_cost_2_nights / total_people)
+  additional_split = additional_cost_3_nights / num_3_nights
+  cost_per_3_night_person = (cost_per_2_night_person + additional_split)
+  total_2_night_stayer_price = (cost_per_2_night_person * num_2_nights)
+  total_3_night_stayer_price = (cost_per_3_night_person * num_3_nights)
+  # Prints the results
+  print("\n\n\n ---------------------------------")
+  print(f"\n\n\nTotal additional cost for those staying 3 nights: ${additional_cost_3_nights:.2f}")
+  print(f"\nTotal vacation cost for all 2 night stayers: ${total_2_night_stayer_price:.2f}")
+  print(f"\nTotal vacation cost for all 3 night stayers: ${total_3_night_stayer_price:.2f}")
+  print(f"\n\nTotal vacation cost: ${total_cost:.2f}")
+  print(f"\n\nEach person staying for 2 nights will pay: ${cost_per_2_night_person:.2f}")
+  print(f"Each person staying for 3 nights will pay: ${cost_per_3_night_person:.2f}")
+  # Calls the functions
+costs_march_30()
+calculate_vacation_cost()
