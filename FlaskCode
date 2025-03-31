@@ -1,0 +1,90 @@
+
+from flask import Flask, render_template, request, redirect, url_for, session
+import os
+
+app = Flask(__name__)
+app.secret_key = os.urandom(24)
+
+def costs_march_30():
+    return """Costs for March 30:
+
+380 x 2 nights: $760.00
+Cleaning fee: $175.00
+Airbnb service fee: $132.00
+Taxes: $108.69
+Total: $1,175.69
+
+380 x 3 nights: $1,140.00
+Cleaning fee: $200.00
+Airbnb service fee: $189.18
+Taxes: $155.78
+Total: $1,684.96"""
+
+questions = [
+    {"id": 1, "text": "Enter the general cost for each additional night:"},
+    {"id": 2, "text": "Enter the number of people staying for 2 nights:"},
+    {"id": 3, "text": "Enter the number of people staying for 3 nights:"},
+    {"id": 4, "text": "Enter the cleaning fee for a 2 night stay:"},
+    {"id": 5, "text": "Enter the service fee for a 2 night stay:"},
+    {"id": 6, "text": "Enter the tax for a 2 night stay:"},
+    {"id": 7, "text": "Enter the cleaning for a 3 night stay:"},
+    {"id": 8, "text": "Enter the service fee for 3 a night stay:"},
+    {"id": 9, "text": "Enter the tax for a 3 night stay:"}
+]
+
+@app.route('/')
+def home():
+    session.clear()
+    return render_template('home.html', costs=costs_march_30())
+
+@app.route('/question/<int:q_id>', methods=['GET', 'POST'])
+def question(q_id):
+    if request.method == 'POST':
+        session[f'q{q_id}'] = float(request.form['answer'])
+        if q_id < len(questions):
+            return redirect(url_for('question', q_id=q_id + 1))
+        return redirect(url_for('results'))
+    
+    if q_id <= len(questions):
+        previous_answer = session.get(f'q{q_id}', '')
+        return render_template('question.html', 
+                            question=questions[q_id - 1],
+                            previous_answer=previous_answer,
+                            costs=costs_march_30())
+    return redirect(url_for('results'))
+
+@app.route('/results')
+def results():
+    answers = {f'q{i+1}': session.get(f'q{i+1}', 0) for i in range(9)}
+    
+    night_cost = answers['q1']
+    num_2_nights = answers['q2']
+    num_3_nights = answers['q3']
+    
+    total_nightly_cost_2_nights = (answers['q6'] + answers['q5'] + 
+                                  answers['q4'] + (night_cost * 2))
+    total_nightly_cost_3_nights = (answers['q9'] + answers['q8'] + 
+                                  answers['q7'] + (night_cost * 3))
+    
+    additional_cost_3_nights = total_nightly_cost_3_nights - total_nightly_cost_2_nights
+    total_people = num_2_nights + num_3_nights
+    total_cost = total_nightly_cost_2_nights + additional_cost_3_nights
+    
+    cost_per_2_night_person = total_nightly_cost_2_nights / total_people
+    additional_split = additional_cost_3_nights / num_3_nights
+    cost_per_3_night_person = cost_per_2_night_person + additional_split
+    
+    total_2_night_stayer_price = cost_per_2_night_person * num_2_nights
+    total_3_night_stayer_price = cost_per_3_night_person * num_3_nights
+    
+    return render_template('results.html',
+                         additional_cost=additional_cost_3_nights,
+                         total_2_nights=total_2_night_stayer_price,
+                         total_3_nights=total_3_night_stayer_price,
+                         total_cost=total_cost,
+                         cost_per_2_night=cost_per_2_night_person,
+                         cost_per_3_night=cost_per_3_night_person)
+
+if __name__ == '__main__':
+    os.makedirs('templates', exist_ok=True)
+    app.run(host='0.0.0.0', port=5000)
